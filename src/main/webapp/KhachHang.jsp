@@ -59,26 +59,64 @@
             margin-top: 3px;
         }
         .menu-list {
-            list-style: none; /* Bỏ dấu chấm đầu dòng */
+            list-style: none; /* Bỏ dấu chấm tròn mặc định của thẻ ul */
             padding: 12px 0;
             margin: 0;
             flex: 1;
         }
-        .menu-list a {
-            display: block;
+        .menu-list a,
+        .menu-dropdown-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: left;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 12px 22px;
             color: #cbd5e1;
-            text-decoration: none; /* Bỏ gạch chân chữ */
+            text-decoration: none; /* Bỏ gạch chân link */
             font-size: 14px;
             font-weight: 600;
-            border-left: 3px solid transparent;
-            transition: 0.2s; /* Đổi màu mượt hơn */
+            border-left: 3px solid transparent; /* Viền trái ẩn để lúc hover không bị giật chữ */
+            transition: 0.2s; /* Đổi màu mượt khi rê chuột */
         }
         .menu-list a:hover,
-        .menu-list a.active {
-            background-color: rgba(37, 99, 235, 0.22);
+        .menu-list a.active,
+        .menu-dropdown-btn:hover,
+        .menu-dropdown-btn.open {
+            background-color: rgba(37, 99, 235, 0.22); /* Tô nền xanh nhạt cho mục đang chọn */
             color: #ffffff;
-            border-left-color: #2563eb;
+            border-left-color: #2563eb; /* Hiện vạch xanh bên trái mục đang chọn */
+        }
+        .menu-arrow {
+            font-size: 11px;
+            transition: transform 0.25s ease;
+        }
+        .menu-dropdown-btn.open .menu-arrow {
+            transform: rotate(180deg); /* Xoay mũi tên khi bấm mở */
+        }
+
+        /* Danh sách con dạng thanh trượt / vuốt lên xuống */
+        .submenu-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            max-height: 0; /* Mặc định thu gọn */
+            overflow-y: auto; /* Vuốt lên / xuống được khi mở danh sách con */
+            background-color: rgba(0, 0, 0, 0.22);
+            transition: max-height 0.3s ease; /* Hiệu ứng trượt mượt */
+        }
+        .submenu-list.open {
+            max-height: 165px; /* Giới hạn chiều cao để có thanh vuốt lên/xuống gọn gàng */
+        }
+        .submenu-list a {
+            padding: 10px 22px 10px 36px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #cbd5e1;
         }
         .sidebar-footer {
             padding: 16px 20px;
@@ -257,20 +295,42 @@
             <div class="sub-text">QUẢN LÝ BÁN GIÀY</div>
         </div>
         <ul class="menu-list">
-            <c:choose>
-                <c:when test="${isQuanLy}"> <%-- Quản lý thì thấy đủ menu --%>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp?view=thongke">Thống kê doanh thu</a></li>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp?view=banhang">Trang bán hàng</a></li>
-                    <li><a href="${pageContext.request.contextPath}/HoaDon">Hóa đơn</a></li>
-                    <li><a href="${pageContext.request.contextPath}/KhachHang" class="active">Khách hàng</a></li> <%-- Đang ở trang khách hàng nên tô active --%>
-                    <li><a href="${pageContext.request.contextPath}/SanPham">Sản phẩm</a></li>
-                    <li><a href="${pageContext.request.contextPath}/NhanVien">Nhân viên</a></li>
-                    <li><a href="${pageContext.request.contextPath}/MaGiamGia">Mã giảm giá</a></li>
-                    <li><a href="${pageContext.request.contextPath}/DanhMucSanPham">Danh mục</a></li>
+            <c:choose> <%-- Kiểm tra quyền để hiện đúng danh sách menu --%>
+                <c:when test="${isQuanLy}"> <%-- Nếu là Quản lý thì hiện đầy đủ các mục --%>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/index.jsp?view=thongke"
+                           class="${activeView == 'thongke' ? 'active' : ''}">Thống kê doanh thu</a> <%-- Bấm vào để xem thống kê --%>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/BanHang"
+                           class="${activeView == 'banhang' ? 'active' : ''}">Trang bán hàng</a> <%-- Bấm vào để xem danh sách giày bán --%>
+                    </li>
+                    <li><a href="${pageContext.request.contextPath}/HoaDon">Hóa đơn</a></li> <%-- Sang trang quản lý hóa đơn --%>
+                    <li><a href="${pageContext.request.contextPath}/KhachHang">Khách hàng</a></li> <%-- Sang trang quản lý khách hàng --%>
+                    <li><a href="${pageContext.request.contextPath}/SanPham">Sản phẩm</a></li> <%-- Sang trang quản lý sản phẩm --%>
+                    <li><a href="${pageContext.request.contextPath}/NhanVien">Nhân viên</a></li> <%-- Sang trang quản lý nhân viên --%>
+                    <li><a href="${pageContext.request.contextPath}/MaGiamGia">Mã giảm giá</a></li> <%-- Sang trang quản lý mã giảm giá --%>
+                    <li>
+                        <button type="button" class="menu-dropdown-btn" id="thuocTinhToggle">
+                            <span>Thuộc tính sản phẩm</span>
+                            <span class="menu-arrow">▼</span>
+                        </button>
+                        <ul class="submenu-list" id="thuocTinhSubmenu">
+                            <li><a href="${pageContext.request.contextPath}/DanhMucSanPham">Danh mục</a></li>
+                            <li><a href="${pageContext.request.contextPath}/MauSac">Màu sắc</a></li>
+                            <li><a href="${pageContext.request.contextPath}/Size">Size</a></li>
+                            <li><a href="${pageContext.request.contextPath}/NhaCungCap">Nhà cung cấp</a></li>
+                            <li><a href="${pageContext.request.contextPath}/ChatLieu">Chất liệu</a></li>
+                        </ul>
+                    </li>
                 </c:when>
-                <c:otherwise> <%-- Nhân viên thì chỉ thấy các mục bán hàng --%>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp?view=banhang">Bán hàng</a></li>
-                    <li><a href="${pageContext.request.contextPath}/KhachHang" class="active">Khách hàng</a></li>
+
+                <c:otherwise> <%-- Nếu là Nhân viên thì ẩn thống kê, nhân viên, danh mục; chỉ hiện các mục bán hàng --%>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/index.jsp?view=banhang"
+                           class="${activeView == 'banhang' ? 'active' : ''}">Bán hàng</a>
+                    </li>
+                    <li><a href="${pageContext.request.contextPath}/KhachHang">Khách hàng</a></li>
                     <li><a href="${pageContext.request.contextPath}/HoaDon">Hóa đơn</a></li>
                     <li><a href="${pageContext.request.contextPath}/SanPham">Sản phẩm</a></li>
                     <li><a href="${pageContext.request.contextPath}/MaGiamGia">Mã giảm giá</a></li>
@@ -381,6 +441,16 @@
         </div>
     </div>
 </div>
-
+<script>
+    // Bấm vào "Thuộc tính sản phẩm" để trượt mở/đóng danh sách con (có thể vuốt lên/xuống bên trong)
+    const thuocTinhToggle = document.getElementById("thuocTinhToggle");
+    const thuocTinhSubmenu = document.getElementById("thuocTinhSubmenu");
+    if (thuocTinhToggle && thuocTinhSubmenu) {
+        thuocTinhToggle.addEventListener("click", function () {
+            thuocTinhToggle.classList.toggle("open");
+            thuocTinhSubmenu.classList.toggle("open");
+        });
+    }
+</script>
 </body>
 </html>

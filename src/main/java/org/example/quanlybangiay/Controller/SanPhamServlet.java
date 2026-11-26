@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -63,27 +64,25 @@ public class SanPhamServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
 
+        String tenSP = request.getParameter("tenSP");
+        String moTa = request.getParameter("moTa");
+        String trangThai = request.getParameter("trangThai");
+        String maDanhMucStr = request.getParameter("maDanhMuc");
+        String maChatLieuStr = request.getParameter("maChatLieu");
+        String maNCCStr = request.getParameter("maNCC");
+
+        DanhMucSanPham danhMuc = new DanhMucSanPham();
+        danhMuc.setMaDanhMuc(parseIntSafe(maDanhMucStr));
+
+        ChatLieu chatLieu = new ChatLieu();
+        chatLieu.setMaChatLieu(parseIntSafe(maChatLieuStr));
+
+        NhaCungCap nhaCungCap = new NhaCungCap();
+        nhaCungCap.setMaNCC(parseIntSafe(maNCCStr));
+
         if ("add".equals(action)) {
-            String tenSP = request.getParameter("tenSP");
-            String moTa = request.getParameter("moTa");
-            String trangThai = request.getParameter("trangThai");
-
-            String maDanhMucStr = request.getParameter("maDanhMuc");
-            String maChatLieuStr = request.getParameter("maChatLieu");
-            String maNCCStr = request.getParameter("maNCC");
-
-            // Lưu file ảnh PNG/JPG nếu có chọn; nếu không chọn thì dùng ảnh mặc định trong /img
             Part filePart = request.getPart("anhFile");
             String tenFileAnh = saveUploadedImage(request, filePart, "mercurial_cr7_gold.jpg");
-
-            DanhMucSanPham danhMuc = new DanhMucSanPham();
-            danhMuc.setMaDanhMuc(parseIntSafe(maDanhMucStr));
-
-            ChatLieu chatLieu = new ChatLieu();
-            chatLieu.setMaChatLieu(parseIntSafe(maChatLieuStr));
-
-            NhaCungCap nhaCungCap = new NhaCungCap();
-            nhaCungCap.setMaNCC(parseIntSafe(maNCCStr));
 
             SanPham sp = new SanPham();
             sp.setTenSP(tenSP != null ? tenSP.trim() : "");
@@ -93,8 +92,37 @@ public class SanPhamServlet extends HttpServlet {
             sp.setDanhMucSanPham(danhMuc);
             sp.setChatLieu(chatLieu);
             sp.setNhaCungCap(nhaCungCap);
+            sp.setNgayTao(LocalDateTime.now());
 
             sanPhamRepo.addSanPham(sp);
+        } else if ("update".equals(action)) {
+            String maSPStr = request.getParameter("maSP");
+            if (maSPStr == null || maSPStr.isBlank()) {
+                maSPStr = request.getParameter("id");
+            }
+
+            SanPham sp = sanPhamRepo.getSanPhamById(maSPStr);
+            if (sp != null) {
+                Part filePart = request.getPart("anhFile");
+                String anhHienTai = (sp.getAnh() != null && !sp.getAnh().isBlank())
+                        ? sp.getAnh()
+                        : "mercurial_cr7_gold.jpg";
+                String tenFileAnh = saveUploadedImage(request, filePart, anhHienTai);
+
+                sp.setTenSP(tenSP != null ? tenSP.trim() : sp.getTenSP());
+                sp.setAnh(tenFileAnh);
+                sp.setMoTa(moTa != null ? moTa.trim() : sp.getMoTa());
+                sp.setTrangThai((trangThai != null && !trangThai.isBlank()) ? trangThai.trim() : sp.getTrangThai());
+                sp.setDanhMucSanPham(danhMuc);
+                sp.setChatLieu(chatLieu);
+                sp.setNhaCungCap(nhaCungCap);
+                if (sp.getNgayTao() == null) {
+                    sp.setNgayTao(LocalDateTime.now());
+                }
+                sp.setNgayCapNhat(LocalDateTime.now());
+
+                sanPhamRepo.updateSanPham(sp);
+            }
         }
 
         // Chuyển hướng về GET /SanPham để tránh gửi lại form khi bấm F5

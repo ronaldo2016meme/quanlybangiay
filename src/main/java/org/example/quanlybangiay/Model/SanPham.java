@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Table(name = "SanPham")
@@ -27,10 +28,10 @@ public class SanPham {
     String moTa;
 
     @Column(name = "NgayTao")
-    Date ngayTao;
+    LocalDateTime ngayTao;
 
     @Column(name = "NgayCapNhat")
-    Date ngayCapNhat;
+    LocalDateTime ngayCapNhat;
 
     @Column(name = "Anh")
     String Anh;

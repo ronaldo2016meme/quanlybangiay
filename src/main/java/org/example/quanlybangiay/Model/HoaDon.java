@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Table(name = "HoaDon")
@@ -24,7 +24,7 @@ public class HoaDon {
     @Column(name = "MaHD")
     Integer MaHD;
     @Column(name = "ngayLap")
-    Date NgayLap;
+    LocalDateTime NgayLap;
     @Column(name = "HoTen")
     String HoTen;
     @Column(name = "sdt")

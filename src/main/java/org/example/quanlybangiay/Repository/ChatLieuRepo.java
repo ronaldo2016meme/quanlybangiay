@@ -11,26 +11,38 @@ import java.util.List;
 public class ChatLieuRepo {
     public List<ChatLieu> getAllChatLieu() {
         Session session = HibernateConfig.getFACTORY().openSession();
-        Query query = (Query) session.createQuery("FROM ChatLieu ORDER BY maChatLieu DESC");
-        List<ChatLieu> listChatLieu = query.getResultList();
-        session.close();
-        return listChatLieu;
+        try {
+            Query query = session.createQuery("FROM ChatLieu ORDER BY maChatLieu DESC");
+            return query.getResultList();
+        } finally {
+            session.close();
+        }
     }
 
     public ChatLieu getChatLieuById(Integer id) {
+        if (id == null) {
+            return null;
+        }
         Session session = HibernateConfig.getFACTORY().openSession();
-        ChatLieu item = session.get(ChatLieu.class, id);
-        session.close();
-        return item;
+        try {
+            return session.get(ChatLieu.class, id);
+        } finally {
+            session.close();
+        }
     }
 
     public List<ChatLieu> searchChatLieu(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getAllChatLieu();
+        }
         Session session = HibernateConfig.getFACTORY().openSession();
-        Query query = (Query) session.createQuery("FROM ChatLieu WHERE LOWER(tenChatLieu) LIKE :kw ORDER BY maChatLieu DESC");
-        query.setParameter("kw", "%" + keyword.trim().toLowerCase() + "%");
-        List<ChatLieu> listChatLieu = query.getResultList();
-        session.close();
-        return listChatLieu;
+        try {
+            Query query = session.createQuery("FROM ChatLieu WHERE LOWER(tenChatLieu) LIKE :kw ORDER BY maChatLieu DESC");
+            query.setParameter("kw", "%" + keyword.trim().toLowerCase() + "%");
+            return query.getResultList();
+        } finally {
+            session.close();
+        }
     }
 
     public void addChatLieu(ChatLieu cl) {

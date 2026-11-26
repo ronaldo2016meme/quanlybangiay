@@ -16,7 +16,6 @@
             display: flex; /* Chia bố cục 2 cột: sidebar bên trái và nội dung chính bên phải */
             min-height: 100vh;
         }
-
         /* ================= SIDEBAR MENU BÊN TRÁI ================= */
         /* Thanh menu dọc bên trái có thể vuốt lên / xuống */
         .sidebar {
@@ -103,7 +102,6 @@
         .menu-dropdown-btn.open .menu-arrow {
             transform: rotate(180deg); /* Xoay mũi tên khi bấm mở */
         }
-
         /* Danh sách con dạng thanh trượt / vuốt lên xuống */
         .submenu-list {
             list-style: none;
@@ -123,7 +121,6 @@
             font-weight: 500;
             color: #cbd5e1;
         }
-
         /* Làm thanh vuốt nhỏ gọn cho đẹp */
         .sidebar::-webkit-scrollbar,
         .submenu-list::-webkit-scrollbar {
@@ -134,7 +131,6 @@
             background: rgba(255, 255, 255, 0.25);
             border-radius: 6px;
         }
-
         .sidebar-footer {
             padding: 16px 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -152,7 +148,6 @@
             text-decoration: none;
             font-weight: bold;
         }
-
         /* ================= NỘI DUNG CHÍNH BÊN PHẢI ================= */
         .main-wrapper {
             flex: 1;
@@ -196,7 +191,6 @@
             font-weight: 600;
             margin-bottom: 16px;
         }
-
         /* Lưới 2 cột: bên trái là ảnh giày, bên phải là thông tin & chọn size/màu */
         .detail-layout {
             display: grid;
@@ -222,7 +216,6 @@
             object-fit: contain; /* Hiển thị trọn vẹn đôi giày không bị cắt */
             display: block;
         }
-
         .product-name {
             margin: 0 0 8px;
             font-size: 22px;
@@ -255,7 +248,6 @@
             padding: 12px;
             margin-bottom: 18px;
         }
-
         /* Style các nút chọn Size và Màu sắc */
         .option-block {
             margin-bottom: 18px;
@@ -300,7 +292,6 @@
             cursor: not-allowed;
             text-decoration: line-through;
         }
-
         .stock-info {
             font-size: 13px;
             font-weight: 600;
@@ -309,8 +300,7 @@
         }
         .stock-ok { color: #15803d; } /* Màu xanh khi còn hàng */
         .stock-out { color: #dc2626; } /* Màu đỏ khi hết hàng */
-
-        /* Khung form sửa biến thể đang chọn cho Quản lý */
+        /* Khung form thêm & sửa biến thể cho Quản lý */
         .edit-variant-box {
             margin-top: 16px;
             padding-top: 16px;
@@ -362,7 +352,6 @@
             background-color: #94a3b8;
             cursor: not-allowed;
         }
-
         .btn-secondary {
             padding: 8px 14px;
             background-color: #e2e8f0;
@@ -380,7 +369,6 @@
             color: #64748b;
             padding: 28px;
         }
-
         @media (max-width: 860px) {
             .detail-layout {
                 grid-template-columns: 1fr; /* Trên màn hình nhỏ chuyển sang 1 cột */
@@ -389,12 +377,10 @@
     </style>
 </head>
 <body>
-
 <%-- Lấy tên chức vụ của tài khoản đang đăng nhập và chuyển về chữ thường để kiểm tra quyền --%>
 <c:set var="chucVu" value="${fn:toLowerCase(sessionScope.userLogin.tenChucVu)}" />
 <%-- Xác định người dùng hiện tại có phải Quản lý / Admin hay không --%>
 <c:set var="isQuanLy" value="${fn:contains(chucVu, 'quản lý') or fn:contains(chucVu, 'quan ly') or fn:contains(chucVu, 'admin')}" />
-
 <aside class="sidebar">
     <div>
         <div class="sidebar-brand">
@@ -413,7 +399,7 @@
                            class="${activeView == 'thongke' ? 'active' : ''}">Thống kê doanh thu</a> <%-- Bấm vào để xem thống kê --%>
                     </li>
                     <li>
-                        <a href="${pageContext.request.contextPath}/index.jsp?view=banhang"
+                        <a href="${pageContext.request.contextPath}/BanHang"
                            class="${activeView == 'banhang' ? 'active' : ''}">Trang bán hàng</a> <%-- Bấm vào để xem danh sách giày bán --%>
                     </li>
                     <li><a href="${pageContext.request.contextPath}/HoaDon">Hóa đơn</a></li> <%-- Sang trang quản lý hóa đơn --%>
@@ -435,10 +421,9 @@
                         </ul>
                     </li>
                 </c:when>
-
                 <c:otherwise> <%-- Nếu là Nhân viên thì ẩn thống kê, nhân viên, danh mục; chỉ hiện các mục bán hàng --%>
                     <li>
-                        <a href="${pageContext.request.contextPath}/index.jsp?view=banhang"
+                        <a href="${pageContext.request.contextPath}/BanHang"
                            class="${activeView == 'banhang' ? 'active' : ''}">Bán hàng</a>
                     </li>
                     <li><a href="${pageContext.request.contextPath}/KhachHang">Khách hàng</a></li>
@@ -465,20 +450,20 @@
         </c:choose>
     </div>
 </aside>
-
 <div class="main-wrapper">
     <div class="topbar">
         <h2>Chi Tiết Sản Phẩm</h2>
         <%-- Nút quay lại trang danh sách sản phẩm --%>
         <a href="${pageContext.request.contextPath}/SanPham" class="btn-secondary">← Quay lại danh sách sản phẩm</a>
     </div>
-
     <div class="container">
         <div class="card-box">
+            <c:if test="${param.added == '1'}">
+                <div class="alert-success">Thêm biến thể sản phẩm chi tiết thành công!</div>
+            </c:if>
             <c:if test="${param.updated == '1'}">
                 <div class="alert-success">Cập nhật biến thể sản phẩm thành công!</div>
             </c:if>
-
             <%-- Lấy mã sản phẩm từ tham số ?maSP=... trên URL và tìm đối tượng SanPham tương ứng trong listSanPhamChiTiet --%>
             <c:set var="targetMaSP" value="${fn:trim(param.maSP)}" />
             <c:set var="sanPhamChon" value="${null}" />
@@ -487,7 +472,6 @@
                     <c:set var="sanPhamChon" value="${item.sanPham}" />
                 </c:if>
             </c:forEach>
-
             <c:choose>
                 <%-- Chỉ hiển thị khi tìm thấy sản phẩm khớp với maSP được bấm chọn --%>
                 <c:when test="${not empty sanPhamChon}">
@@ -498,7 +482,6 @@
                                  src="${pageContext.request.contextPath}/img/${sanPhamChon.anh}"
                                  alt="${sanPhamChon.tenSP}">
                         </div>
-
                         <div>
                                 <%-- Thông tin cơ bản của sản phẩm đang xem --%>
                             <h1 class="product-name">${sanPhamChon.tenSP}</h1>
@@ -507,40 +490,80 @@
                                 Danh mục: <strong>${sanPhamChon.danhMucSanPham.tenDanhMuc}</strong> |
                                 Chất liệu: <strong>${sanPhamChon.chatLieu.tenChatLieu}</strong>
                             </div>
-
                                 <%-- Giá bán và giá nhập/ngày tạo của biến thể đang chọn --%>
                             <div class="product-price" id="priceDisplay">Liên hệ</div>
                             <div class="sub-price" id="importPriceDisplay"></div>
-
                                 <%-- Mô tả sản phẩm --%>
                             <div class="product-desc">${sanPhamChon.moTa}</div>
-
                                 <%-- Khu vực render các nút chọn Size (39 - 44) bằng JavaScript --%>
                             <div class="option-block">
                                 <span class="option-label">Chọn Size:</span>
                                 <div class="option-list" id="sizeList"></div>
                             </div>
-
                                 <%-- Khu vực render các nút chọn Màu (Đỏ, Xanh, Đen, Trắng, Vàng Gold...) bằng JavaScript --%>
                             <div class="option-block">
                                 <span class="option-label">Chọn Màu:</span>
                                 <div class="option-list" id="colorList"></div>
                             </div>
-
                                 <%-- Hiển thị trạng thái còn hàng / hết hàng và số lượng tồn --%>
                             <div class="stock-info" id="stockStatus"></div>
 
-                                <%-- Form sửa biến thể đang chọn (chỉ hiển thị cho Quản lý) --%>
+                                <%-- Form thêm biến thể mới & form sửa biến thể đang chọn (chỉ hiển thị cho Quản lý) --%>
                             <c:if test="${isQuanLy}">
+                                <form action="${pageContext.request.contextPath}/SanPhamChiTiet" method="POST" id="addVariantForm" class="edit-variant-box">
+                                    <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="maSP" value="${sanPhamChon.maSP}">
+                                    <div class="edit-variant-title">
+                                        Thêm Biến Thể Mới (#${sanPhamChon.maSP})
+                                    </div>
+                                    <div class="edit-variant-grid">
+                                        <div class="edit-field">
+                                            <label for="addMaSize">Size</label>
+                                            <select name="maSize" id="addMaSize" required>
+                                                <c:forEach items="${listSize}" var="sz">
+                                                    <option value="${sz.maSize}">Size ${sz.tenSize}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                        <div class="edit-field">
+                                            <label for="addMaMau">Màu sắc</label>
+                                            <select name="maMau" id="addMaMau" required>
+                                                <c:forEach items="${listMauSac}" var="ms">
+                                                    <option value="${ms.maMau}">${ms.tenMau}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                        <div class="edit-field">
+                                            <label for="addGiaBan">Giá bán (₫)</label>
+                                            <input type="number" name="giaBan" id="addGiaBan" min="0" step="any" required>
+                                        </div>
+                                        <div class="edit-field">
+                                            <label for="addGiaNhap">Giá nhập (₫)</label>
+                                            <input type="number" name="giaNhap" id="addGiaNhap" min="0" step="any" required>
+                                        </div>
+                                        <div class="edit-field">
+                                            <label for="addSoLuongTon">Tồn kho</label>
+                                            <input type="number" name="soLuongTon" id="addSoLuongTon" min="0" required>
+                                        </div>
+                                        <div class="edit-field">
+                                            <label for="addTrangThai">Trạng thái</label>
+                                            <select name="trangThai" id="addTrangThai">
+                                                <option value="Còn hàng">Còn hàng</option>
+                                                <option value="Hết hàng">Hết hàng</option>
+                                                <option value="Ngừng bán">Ngừng bán</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn-primary">Thêm biến thể</button>
+                                </form>
+
                                 <form action="${pageContext.request.contextPath}/SanPhamChiTiet" method="POST" id="editVariantForm" class="edit-variant-box">
                                     <input type="hidden" name="action" value="update">
                                     <input type="hidden" name="maSP" value="${sanPhamChon.maSP}">
                                     <input type="hidden" name="maSPCT" id="editMaSPCT">
-
                                     <div class="edit-variant-title">
                                         Sửa Biến Thể Đang Chọn (<span id="editVariantCodeLabel">-</span>)
                                     </div>
-
                                     <div class="edit-variant-grid">
                                         <div class="edit-field">
                                             <label for="editMaSize">Size</label>
@@ -550,7 +573,6 @@
                                                 </c:forEach>
                                             </select>
                                         </div>
-
                                         <div class="edit-field">
                                             <label for="editMaMau">Màu sắc</label>
                                             <select name="maMau" id="editMaMau">
@@ -559,22 +581,18 @@
                                                 </c:forEach>
                                             </select>
                                         </div>
-
                                         <div class="edit-field">
                                             <label for="editGiaBan">Giá bán (₫)</label>
                                             <input type="number" name="giaBan" id="editGiaBan" min="0" step="any" required>
                                         </div>
-
                                         <div class="edit-field">
                                             <label for="editGiaNhap">Giá nhập (₫)</label>
                                             <input type="number" name="giaNhap" id="editGiaNhap" min="0" step="any" required>
                                         </div>
-
                                         <div class="edit-field">
                                             <label for="editSoLuongTon">Tồn kho</label>
                                             <input type="number" name="soLuongTon" id="editSoLuongTon" min="0" required>
                                         </div>
-
                                         <div class="edit-field">
                                             <label for="editTrangThai">Trạng thái</label>
                                             <select name="trangThai" id="editTrangThai">
@@ -584,13 +602,11 @@
                                             </select>
                                         </div>
                                     </div>
-
                                     <button type="submit" id="saveVariantBtn" class="btn-primary">Lưu sửa biến thể</button>
                                 </form>
                             </c:if>
                         </div>
                     </div>
-
                     <script>
                         // Đường dẫn gốc tới thư mục chứa ảnh trong webapp/img/
                         const imgBasePath = "${pageContext.request.contextPath}/img/";
@@ -598,7 +614,6 @@
                         const defaultImage = "${sanPhamChon.anh}";
                         // Tên sản phẩm hiện tại (chữ thường) để nhận diện đúng dòng giày khi đổi màu
                         const productNameLower = "${fn:toLowerCase(sanPhamChon.tenSP)}";
-
                         // Quy đổi mã size (1..6) sang size 39..44.
                         // Nếu maSize trong DB đã là "39".."44" thì giữ nguyên số đó.
                         const sizeNameMap = {
@@ -609,7 +624,6 @@
                             "5": "43",
                             "6": "44"
                         };
-
                         // Quy đổi mã màu trong DB sang tên màu tiếng Việt khớp với bảng MauSac của bạn
                         const colorNameMap = {
                             "1": "Đỏ",
@@ -618,7 +632,6 @@
                             "4": "Trắng",
                             "5": "Vàng Gold"
                         };
-
                         // Bảng ảnh chuẩn theo từng dòng giày trong webapp/img/ — mỗi dòng chỉ dùng đúng ảnh của chính nó
                         const productImageSets = [
                             {
@@ -670,7 +683,6 @@
                                 }
                             }
                         ];
-
                         // Chuyển danh sách biến thể thuộc đúng sản phẩm đang bấm từ JSTL sang mảng JS
                         const variants = [
                             <c:set var="firstItem" value="${true}" />
@@ -701,7 +713,6 @@
                             const tenMau = colorNameMap[String(v.maMau || "").trim()] || String(v.maMau || "").trim();
                             return { ...v, tenSize, tenMau };
                         });
-
                         // Tham chiếu tới các phần tử DOM cần thao tác
                         const sizeListEl = document.getElementById("sizeList");
                         const colorListEl = document.getElementById("colorList");
@@ -709,40 +720,32 @@
                         const priceDisplayEl = document.getElementById("priceDisplay");
                         const importPriceDisplayEl = document.getElementById("importPriceDisplay");
                         const stockStatusEl = document.getElementById("stockStatus");
-
                         // Lưu tên size (39..44) và tên màu (Đỏ, Trắng...) đang chọn hiện tại
                         let currentSize = null;
                         let currentColor = null;
-
                         // Kiểm tra biến thể có hết hàng / ngừng bán hay không
                         function isOutOfStock(v) {
                             const st = (v.trangThai || "").toLowerCase();
                             return v.soLuongTon <= 0 || st.includes("hết hàng") || st.includes("het hang") || st.includes("ngừng");
                         }
-
                         // Định dạng số tiền sang kiểu VNĐ (VD: 3.200.000 ₫)
                         function formatVND(amount) {
                             if (!amount || amount <= 0) return "Liên hệ";
                             return Number(amount).toLocaleString("vi-VN") + " ₫";
                         }
-
                         // Lấy ảnh đúng màu của dòng giày hiện tại; nếu không có ảnh màu riêng thì dùng ảnh gốc sản phẩm
                         function getColorImageSrc(v) {
                             const fallbackFile = (v && v.image ? v.image : defaultImage) || "";
                             if (!v || !v.tenMau) {
                                 return imgBasePath + fallbackFile;
                             }
-
                             const colorKey = v.tenMau.toLowerCase().trim();
                             const matchedSet = productImageSets.find(set => set.match());
-
                             if (matchedSet && matchedSet.colors[colorKey]) {
                                 return imgBasePath + matchedSet.colors[colorKey];
                             }
-
                             return imgBasePath + fallbackFile;
                         }
-
                         // Gán ảnh an toàn: luôn bật hiển thị và tự quay về ảnh gốc nếu file màu không tồn tại
                         function setShoeImage(src) {
                             if (!shoeImageEl) return;
@@ -758,27 +761,22 @@
                             };
                             shoeImageEl.src = src;
                         }
-
                         // Vẽ danh sách các nút chọn Size (39 đến 44)
                         function renderSizes() {
                             const sizes = [...new Set(variants.map(v => v.tenSize))];
                             sizeListEl.innerHTML = "";
-
                             if (sizes.length === 0) {
                                 sizeListEl.innerHTML = "<span style='color:#64748b;font-size:13px;'>Chưa có size</span>";
                                 return;
                             }
-
                             sizes.forEach(sz => {
                                 const btn = document.createElement("button");
                                 btn.type = "button";
                                 btn.className = "option-btn";
                                 btn.textContent = "Size " + sz;
-
                                 // Nếu tất cả biến thể của size này đều hết hàng thì khóa nút size
                                 const sizeVariants = variants.filter(v => v.tenSize === sz);
                                 const allSoldOut = sizeVariants.every(isOutOfStock);
-
                                 if (allSoldOut) {
                                     btn.disabled = true;
                                     btn.classList.add("sold-out");
@@ -786,7 +784,6 @@
                                 if (sz === currentSize && !allSoldOut) {
                                     btn.classList.add("active");
                                 }
-
                                 // Khi bấm chọn size: cập nhật size hiện tại, vẽ lại màu & thông tin biến thể
                                 btn.addEventListener("click", () => {
                                     if (allSoldOut) return;
@@ -795,35 +792,28 @@
                                     renderColors();
                                     updateSelection();
                                 });
-
                                 sizeListEl.appendChild(btn);
                             });
                         }
-
                         // Vẽ danh sách các nút chọn Màu sắc (Đỏ, Xanh, Đen, Trắng, Vàng Gold...)
                         function renderColors() {
                             const colors = [...new Set(variants.map(v => v.tenMau))];
                             colorListEl.innerHTML = "";
-
                             if (colors.length === 0) {
                                 colorListEl.innerHTML = "<span style='color:#64748b;font-size:13px;'>Chưa có màu</span>";
                                 return;
                             }
-
                             colors.forEach(col => {
                                 const btn = document.createElement("button");
                                 btn.type = "button";
                                 btn.className = "option-btn";
                                 btn.textContent = "Màu " + col;
-
                                 // Tìm biến thể khớp với size đang chọn + màu này
                                 const matched = currentSize
                                     ? variants.find(v => v.tenSize === currentSize && v.tenMau === col)
                                     : variants.find(v => v.tenMau === col);
-
                                 // Không tồn tại biến thể hoặc hết hàng thì khóa không cho chọn
                                 const soldOut = !matched || isOutOfStock(matched);
-
                                 if (soldOut) {
                                     btn.disabled = true;
                                     btn.classList.add("sold-out");
@@ -831,7 +821,6 @@
                                 if (col === currentColor && !soldOut) {
                                     btn.classList.add("active");
                                 }
-
                                 // Khi bấm chọn màu khác: chuyển sang ảnh giày của màu đó và cập nhật thông tin
                                 btn.addEventListener("click", () => {
                                     if (soldOut) return;
@@ -840,16 +829,13 @@
                                     renderColors();
                                     updateSelection();
                                 });
-
                                 colorListEl.appendChild(btn);
                             });
                         }
-
                         // Đồng bộ dữ liệu biến thể đang chọn vào form sửa (nếu có quyền Quản lý)
                         function syncEditForm(variant) {
                             const editMaSPCTEl = document.getElementById("editMaSPCT");
                             if (!editMaSPCTEl) return;
-
                             const editVariantCodeLabelEl = document.getElementById("editVariantCodeLabel");
                             const editMaSizeEl = document.getElementById("editMaSize");
                             const editMaMauEl = document.getElementById("editMaMau");
@@ -858,7 +844,6 @@
                             const editSoLuongTonEl = document.getElementById("editSoLuongTon");
                             const editTrangThaiEl = document.getElementById("editTrangThai");
                             const saveVariantBtnEl = document.getElementById("saveVariantBtn");
-
                             if (variant) {
                                 editMaSPCTEl.value = variant.id || "";
                                 if (editVariantCodeLabelEl) editVariantCodeLabelEl.textContent = "SPCT #" + (variant.id || "");
@@ -875,11 +860,9 @@
                                 if (saveVariantBtnEl) saveVariantBtnEl.disabled = true;
                             }
                         }
-
                         // Cập nhật ảnh, giá, giá nhập/ngày tạo và trạng thái tồn kho theo (currentSize, currentColor)
                         function updateSelection() {
                             const exactMatch = variants.find(v => v.tenSize === currentSize && v.tenMau === currentColor) || null;
-
                             if (exactMatch) {
                                 setShoeImage(getColorImageSrc(exactMatch));
                                 priceDisplayEl.textContent = "Giá bán: " + formatVND(exactMatch.giaBan);
@@ -891,7 +874,6 @@
                                 priceDisplayEl.textContent = "Liên hệ";
                                 importPriceDisplayEl.textContent = "";
                             }
-
                             if (!exactMatch || isOutOfStock(exactMatch)) {
                                 // Trạng thái hết hàng hoặc không có biến thể: báo đỏ, không thể chọn
                                 stockStatusEl.className = "stock-info stock-out";
@@ -904,10 +886,8 @@
                                     " | Trạng thái: " + (exactMatch.trangThai || "Còn hàng") +
                                     " | Tồn kho: " + exactMatch.soLuongTon;
                             }
-
                             syncEditForm(exactMatch);
                         }
-
                         // Tự động chọn biến thể đầu tiên còn hàng khi mở trang
                         const firstAvailable = variants.find(v => !isOutOfStock(v));
                         if (firstAvailable) {
@@ -917,7 +897,6 @@
                             currentSize = variants[0].tenSize;
                             currentColor = variants[0].tenMau;
                         }
-
                         renderSizes();
                         renderColors();
                         updateSelection();

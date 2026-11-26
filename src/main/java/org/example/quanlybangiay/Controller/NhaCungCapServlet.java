@@ -38,13 +38,19 @@ public class NhaCungCapServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         Integer maNCC = parseInteger(req.getParameter("maNCC"));
+        String tenNCC = req.getParameter("tenNCC");
+
+        if (tenNCC == null || tenNCC.isBlank()) {
+            resp.sendRedirect(req.getContextPath() + "/NhaCungCap");
+            return;
+        }
 
         NhaCungCap ncc = new NhaCungCap();
         ncc.setMaNCC(maNCC);
-        ncc.setTenNCC(req.getParameter("tenNCC"));
-        ncc.setSdt(req.getParameter("sdt"));
-        ncc.setEmail(req.getParameter("email"));
-        ncc.setDiaChi(req.getParameter("diaChi"));
+        ncc.setTenNCC(tenNCC.trim());
+        ncc.setSdt(trimOrNull(req.getParameter("sdt")));
+        ncc.setEmail(trimOrNull(req.getParameter("email")));
+        ncc.setDiaChi(trimOrNull(req.getParameter("diaChi")));
 
         if (maNCC != null) {
             repo.updateNhaCungCap(ncc);
@@ -62,5 +68,10 @@ public class NhaCungCapServlet extends HttpServlet {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String trimOrNull(String val) {
+        if (val == null || val.isBlank()) return null;
+        return val.trim();
     }
 }

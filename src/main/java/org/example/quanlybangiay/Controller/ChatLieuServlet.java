@@ -38,12 +38,18 @@ public class ChatLieuServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         Integer maChatLieu = parseInteger(req.getParameter("maChatLieu"));
+        String tenChatLieu = req.getParameter("tenChatLieu");
+
+        if (tenChatLieu == null || tenChatLieu.isBlank()) {
+            resp.sendRedirect(req.getContextPath() + "/ChatLieu");
+            return;
+        }
 
         ChatLieu cl = new ChatLieu();
         if (maChatLieu != null) {
             cl.setMaChatLieu(maChatLieu);
         }
-        cl.setTenChatLieu(req.getParameter("tenChatLieu"));
+        cl.setTenChatLieu(tenChatLieu.trim());
 
         if (maChatLieu != null) {
             repo.updateChatLieu(cl);

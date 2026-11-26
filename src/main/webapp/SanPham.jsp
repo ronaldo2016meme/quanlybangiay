@@ -336,7 +336,7 @@
                            class="${activeView == 'thongke' ? 'active' : ''}">Thống kê doanh thu</a> <%-- Bấm vào để xem thống kê --%>
                     </li>
                     <li>
-                        <a href="${pageContext.request.contextPath}/index.jsp?view=banhang"
+                        <a href="${pageContext.request.contextPath}/BanHang"
                            class="${activeView == 'banhang' ? 'active' : ''}">Trang bán hàng</a> <%-- Bấm vào để xem danh sách giày bán --%>
                     </li>
                     <li><a href="${pageContext.request.contextPath}/HoaDon">Hóa đơn</a></li> <%-- Sang trang quản lý hóa đơn --%>
@@ -361,7 +361,7 @@
 
                 <c:otherwise> <%-- Nếu là Nhân viên thì ẩn thống kê, nhân viên, danh mục; chỉ hiện các mục bán hàng --%>
                     <li>
-                        <a href="${pageContext.request.contextPath}/index.jsp?view=banhang"
+                        <a href="${pageContext.request.contextPath}/BanHang"
                            class="${activeView == 'banhang' ? 'active' : ''}">Bán hàng</a>
                     </li>
                     <li><a href="${pageContext.request.contextPath}/KhachHang">Khách hàng</a></li>

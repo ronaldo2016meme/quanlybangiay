@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Table(name = "MaGiamGia")
@@ -29,9 +30,9 @@ public class MaGiamGia {
     @Column(name = "PhanTramGiam")
     Double PhanTramGiam;
     @Column(name = "NgayBatDau")
-    Date NgayBatDau;
+    LocalDateTime NgayBatDau;
     @Column(name = "NgayKetThuc")
-    Date NgayKetThuc;
+    LocalDateTime NgayKetThuc;
     @Column(name = "SoLuong")
     Integer SoLuong;
     @Column(name = "SoLuongTon")

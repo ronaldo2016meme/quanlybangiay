@@ -12,8 +12,10 @@ import org.example.quanlybangiay.Model.NhanVien;
 import org.example.quanlybangiay.Repository.HoaDonRepo;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 @WebServlet(name = "HoaDonServlet", value = "/HoaDon")
 public class HoaDonServlet extends HttpServlet {
@@ -53,6 +55,8 @@ public class HoaDonServlet extends HttpServlet {
             return;
         }
 
+        HoaDon existing = hoaDonRepo.getHoaDonById(maHD);
+
         HoaDon hd = new HoaDon();
         hd.setMaHD(maHD);
         hd.setHoTen(req.getParameter("hoTen"));
@@ -64,16 +68,13 @@ public class HoaDonServlet extends HttpServlet {
         hd.setTienGiam(parseDouble(req.getParameter("tienGiam"), 0.0));
         hd.setTienThua(parseDouble(req.getParameter("tienThua"), 0.0));
 
-        String ngayLapStr = req.getParameter("ngayLap");
-        if (ngayLapStr != null && !ngayLapStr.isBlank()) {
-            try {
-                Date parsed = new SimpleDateFormat("yyyy-MM-dd").parse(ngayLapStr.trim());
-                hd.setNgayLap(parsed);
-            } catch (Exception ignored) {
-            }
+        LocalDateTime ngayLap = parseLocalDateTime(req.getParameter("ngayLap"));
+        if (ngayLap != null) {
+            hd.setNgayLap(ngayLap);
+        } else if (existing != null && existing.getNgayLap() != null) {
+            hd.setNgayLap(existing.getNgayLap());
         } else {
-            HoaDon existing = hoaDonRepo.getHoaDonById(maHD);
-            hd.setNgayLap(existing != null && existing.getNgayLap() != null ? existing.getNgayLap() : new Date());
+            hd.setNgayLap(LocalDateTime.now());
         }
 
         Integer maNV = parseInteger(req.getParameter("maNV"));
@@ -99,6 +100,24 @@ public class HoaDonServlet extends HttpServlet {
 
         hoaDonRepo.updateHoaDon(hd);
         resp.sendRedirect(req.getContextPath() + "/HoaDon");
+    }
+
+    private LocalDateTime parseLocalDateTime(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        String trimmed = raw.trim();
+        try {
+            if (trimmed.length() == 10) {
+                return LocalDate.parse(trimmed).atStartOfDay();
+            }
+            return LocalDateTime.parse(trimmed);
+        } catch (DateTimeParseException e) {
+            try {
+                LocalDate date = LocalDate.parse(trimmed.substring(0, 10));
+                return LocalDateTime.of(date, LocalTime.MIDNIGHT);
+            } catch (Exception ignored) {
+                return null;
+            }
+        }
     }
 
     private Double parseDouble(String val, Double defaultVal) {
